@@ -27,40 +27,47 @@ class _CustomersState extends State<Customers> {
     return Scaffold(
       appBar: AppBar(
         elevation: 5,
-        backgroundColor:  Colors.cyan,
-        title: isSearchVisible
-            ? SizedBox(
-                width: isWideScreen ? 400 : 200,
-                child: TextField(
-                  controller: _searchController,
-                  cursorColor: Colors.white,
-                  decoration: const InputDecoration(
-                    hintText: "Search by Name or Token..",
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(color: Colors.white70),
+        backgroundColor: Colors.teal.shade500,
+        title: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: isSearchVisible
+              ? SizedBox(
+                  key: const ValueKey('search'),
+                  width: isWideScreen ? 400 : 200,
+                  child: TextField(
+                    controller: _searchController,
+                    cursorColor: Colors.white,
+                    decoration: const InputDecoration(
+                      hintText: "Search by Name, Phone or Token...",
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(color: Colors.white70),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                    autofocus: true,
+                    onChanged: (value) {
+                      setState(() {
+                        searchQuery = value;
+                      });
+                    },
                   ),
-                  style: const TextStyle(color: Colors.white),
-                  autofocus: true,
-                  onChanged: (value) {
-                    setState(() {
-                      searchQuery = value;
-                    });
-                  },
+                )
+              : const Text(
+                  "Customers",
+                  key: ValueKey('title'),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    letterSpacing: 1.2,
+                  ),
                 ),
-              )
-            : const Text(
-                "Customers",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  letterSpacing: 1.2,
-                ),
-              ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(isSearchVisible ? Icons.close : Icons.search,
-                color: Colors.white),
+            icon: Icon(
+              isSearchVisible ? Icons.close : Icons.search,
+              color: Colors.white,
+            ),
             onPressed: () {
               setState(() {
                 if (isSearchVisible) {
@@ -77,62 +84,49 @@ class _CustomersState extends State<Customers> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: isWideScreen ? 24 : 10,
-          vertical: 10,
-        ),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color.fromARGB(255, 255, 255, 255),
-              Color.fromARGB(255, 159, 230, 255)
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: StreamBuilder(
-          stream:
-              FirebaseFirestore.instance.collection('Customers').snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(child: MyDialogBox());
-            }
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('Customers').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: MyDialogBox());
+          }
 
-            final customers = snapshot.data!.docs;
+          final customers = snapshot.data!.docs;
 
-            final filteredCustomer = customers.where((item) {
-              String token = item['id'].toString();
-              String name = item['name'].toString();
-              String phone = item['phone'].toString();
-              return searchQuery.isEmpty ||
-                  token.contains(searchQuery) ||
-                  phone.contains(searchQuery)||
-                  name.contains(searchQuery);
-            }).toList();
+          final filteredCustomer = customers.where((item) {
+            String token = item['id'].toString();
+            String name = item['name'].toString();
+            String phone = item['phone'].toString();
+            return searchQuery.isEmpty ||
+                token.contains(searchQuery) ||
+                phone.contains(searchQuery) ||
+                name.toLowerCase().contains(searchQuery.toLowerCase());
+          }).toList();
 
-            if (filteredCustomer.isEmpty) {
-              return const Center(child: Text('No Customer available.'));
-            }
+          if (filteredCustomer.isEmpty) {
+            return const Center(child: Text('No customers available.'));
+          }
 
-            return ListView.builder(
-              itemCount: filteredCustomer.length,
-              itemBuilder: (context, index) {
-                final eachCustomer = filteredCustomer[index];
-                final name = eachCustomer['name'];
-                final phone = eachCustomer['phone'];
+          return ListView.builder(
+            itemCount: filteredCustomer.length,
+            itemBuilder: (context, index) {
+              final eachCustomer = filteredCustomer[index];
+              final name = eachCustomer['name'];
+              final phone = eachCustomer['phone'];
 
-                return Card(
+              return Padding(
+                padding: const EdgeInsets.only(left: 12,right: 12),
+                child: Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  shadowColor: const Color.fromARGB(255, 33, 155, 255),
+                  
+                  shadowColor: Colors.teal,
                   elevation: 7,
                   child: ListTile(
-                    contentPadding: const EdgeInsets.all(8),
+                    contentPadding: const EdgeInsets.all(5),
                     onTap: () {
-                       Navigator.push(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
@@ -141,13 +135,12 @@ class _CustomersState extends State<Customers> {
                       );
                     },
                     leading: CircleAvatar(
-                      radius: 25,
-                      backgroundColor:
-                          const Color.fromARGB(255, 25, 175, 255),
+                      radius: 28,
+                      backgroundColor: Colors.teal,
                       child: Text(
                         name[0].toUpperCase(),
                         style: GoogleFonts.poppins(
-                          fontSize: 20,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -161,11 +154,10 @@ class _CustomersState extends State<Customers> {
                       ),
                     ),
                     subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 5),
+                      padding: const EdgeInsets.only(top: 4),
                       child: Row(
                         children: [
-                          const Icon(Icons.phone,
-                              size: 16, color: Colors.grey),
+                          const Icon(Icons.phone, size: 16, color: Colors.grey),
                           const SizedBox(width: 5),
                           Text(
                             phone,
@@ -179,22 +171,23 @@ class _CustomersState extends State<Customers> {
                     ),
                     trailing: const Icon(
                       Icons.arrow_forward_ios,
-                      color: Color.fromARGB(255, 25, 175, 255),
+                      color: Colors.teal,
                     ),
                   ),
-                );
-              },
-            );
-          },
-        ),
+                ),
+              );
+            },
+          );
+        },
       ),
-           floatingActionButton: MyButton(
+      floatingActionButton: MyButton(
         text: "New Customer",
         onPressed: () {
           personsInfo(context);
         },
-        icon: Icons.add,
-        color: const Color.fromARGB(255, 123, 39, 176),
+        fontsize: 18,
+        icon: Icons.person_add_alt_1,
+        color: Colors.teal,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

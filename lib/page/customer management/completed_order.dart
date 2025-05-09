@@ -14,8 +14,8 @@ class CompletedOrder extends StatelessWidget {
     //final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-          elevation: 5,
-          backgroundColor: Colors.cyan,
+           elevation: 5,
+          backgroundColor: Colors.teal.shade500,
           title: Text(
             "Completed Orders",
             style: GoogleFonts.poppins(

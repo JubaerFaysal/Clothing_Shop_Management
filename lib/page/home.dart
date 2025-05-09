@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:tailor_shop/Components/my_button.dart';
 import 'package:tailor_shop/Methods/inventory_method.dart';
+import 'package:tailor_shop/Methods/timer.dart';
 import 'package:tailor_shop/page/details_order.dart';
 import 'package:tailor_shop/page/inventory/inventory_view.dart';
-import '../Components/my_container.dart';
 import '../Components/my_drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,49 +20,52 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor:  const Color.fromARGB(255, 225, 223, 223),
+        backgroundColor: const Color.fromARGB(255, 230, 230, 230),
         appBar: AppBar(
-          elevation: 5,
-          backgroundColor: const Color.fromARGB(255, 8, 172, 155),
-          title: Text("Home",
-              style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.2,
-                  color: Colors.white)),
-          actions: [
-            TextButton.icon(
-              onPressed: () {
-                WebCategoryMethod.addInventory(context);
-              },
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(
-                    const Color.fromARGB(255, 24, 205, 255)),
-              ),
-              label: Text("Add Category",
-                  style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white)),
-              icon: const Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-            )
-          ],
+         elevation: 5,
+          backgroundColor: Colors.teal.shade500,
+          title: Text(
+            "Home",
+            style: GoogleFonts.poppins(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              color: Colors.white,
+            ),
+          ),
           leading: Builder(
             builder: (context) => IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white, size: 27),
+              icon: const Icon(Icons.menu, color: Colors.white),
               onPressed: () => Scaffold.of(context).openDrawer(),
             ),
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  WebCategoryMethod.addInventory(context);
+                },
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: Text("Add Category",
+                    style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600, color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                ),
+              ),
+            ),
+          ],
         ),
         drawer: const MyDrawer(),
-        body: ListView(children: [
-          mycolumn(),
-          const SizedBox(
-            height: 15,
-          ),
+        body: ListView(padding: const EdgeInsets.all(16), children: [
+          inventoryView(),
+          const SizedBox(height: 20),
           StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('Orders')
@@ -70,90 +74,164 @@ class HomePageState extends State<HomePage> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: Text('Waiting for connection..'));
+                  return const Center(
+                      child: CircularProgressIndicator(color: Colors.cyan));
                 }
                 if (snapshot.hasError) {
                   return const Center(child: Text('Error loading data'));
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('No orders found..'));
+                  return const Center(child: Text('No orders found.'));
                 }
 
                 final orderedItems = snapshot.data!.docs;
 
-                if (orderedItems.isEmpty) {
-                  return const Center(child: Text('No orders found.'));
-                }
                 return Container(
-                    width: double.infinity,
-                    // height: 200,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                    padding: const EdgeInsets.all(16),
                     margin: const EdgeInsets.only(top: 10),
-                    decoration: const BoxDecoration(
-                      
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(25),
-                            topRight: Radius.circular(25)),
-                        border: Border(
-                          top: BorderSide(
-                            color: Colors.cyan,
-                            width: 2.5,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
+                        )
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 3, horizontal: 16),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF4DD0E1), Color(0xFF00796B)],
+                              
+                            ),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Text(
+                            "Pending Orders",
+                            style: GoogleFonts.poppins(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        color: Color.fromARGB(255, 255, 255, 255)
-                       ),
-                    child: Column(children: [
-                      Container(
-                        margin: const EdgeInsets.all(4),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 2, horizontal: 15),
-                        decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: [
-                              Color.fromARGB(255, 154, 154, 240),
-                              Colors.teal
-                            ]),
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Text("Pending Orders-",
-                            style: GoogleFonts.poppins(
-                                fontSize: 24,
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.bold)),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      for (var eachItem in orderedItems)
-                        MyContainer(
-                            id: eachItem.id,
-                            measurement: eachItem['Measurement'],
-                            token: eachItem['Token'],
-                            fabric: eachItem['Fabric'],
-                            quantity: eachItem['Quantity'],
-                            unitPrice: eachItem['Unit_Price'],
-                            totalPrice: eachItem['Total_Price'],
-                            advance: eachItem.data().containsKey('Advance')
-                                ? eachItem['Advance']
-                                : null,
-                            due: eachItem.data().containsKey('Due')
-                                ? eachItem['Due']
-                                : null,
-                            productName:
-                                eachItem.data().containsKey('Product_Name')
-                                    ? eachItem['Product_Name']
-                                    : null,
-                            deliveryDate: DateFormat('yyyy-MM-dd')
-                                .format(eachItem['Delivery_Date'].toDate()),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      DetailsOrder(eachItem: eachItem),
-                                ),
-                              );
-                            }),
-                    ]));
+                        const SizedBox(height: 20),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final itemWidth = (constraints.maxWidth - 12) / 2;
+
+                            return Wrap(
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: orderedItems.map((eachItem) {
+                                return SizedBox(
+                                  width: itemWidth,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF5F5F5),
+                                      borderRadius: BorderRadius.circular(15),
+                                      border: Border.all(
+                                          color: Colors.teal, width: 1),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 5,
+                                          offset: Offset(2, 3),
+                                        )
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              eachItem['Measurement'],
+                                              style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                                color: Colors.teal,
+                                                 decoration:
+                                                    TextDecoration.underline,
+                                                decorationStyle: TextDecorationStyle.solid, 
+                                                decorationColor: Colors.teal,
+                                                   letterSpacing: 1.2,
+                                                decorationThickness: 2,
+                                              ),
+                                            ),
+                                              MyButton(
+                                              text: "View Details",
+                                              color: Colors.teal,
+                                              icon: Icons.visibility,
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        DetailsOrder(
+                                                            eachItem: eachItem),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text("Token: ${eachItem['Token']}",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500)),
+                                        Text("Fabric: ${eachItem['Fabric']}",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14)),
+                                        Text(
+                                            "Quantity: ${eachItem['Quantity']}",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14)),
+                                        Text(
+                                            "Unit_Price: ${eachItem['Unit_Price']}",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14)),
+                                        Text(
+                                            "Total_Price: ${eachItem['Total_Price']}",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14)),
+                                        Text("Advance: ${eachItem['Advance']}",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14)),
+                                        Text("Due: ${eachItem['Due']}",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14)),
+                                        Text(
+                                          "Delivery: ${DateFormat('yyyy-MM-dd').format(eachItem['Delivery_Date'].toDate())}",
+                                          style:
+                                              GoogleFonts.poppins(fontSize: 13),
+                                        ),
+                                        const SizedBox(height: 10,),
+                                        DeadlineTimer(orderId: eachItem.id),
+                                       
+                                       
+                                       
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            );
+                          },
+                        )
+                      ],
+                    ));
               })
         ]));
   }

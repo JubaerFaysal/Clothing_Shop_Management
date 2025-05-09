@@ -86,23 +86,56 @@ class DeadlineTimerState extends State<DeadlineTimer> {
       });
     });
   }
-
-  @override
+@override
   Widget build(BuildContext context) {
+    bool isDeadlinePassed = _timeRemaining.inSeconds <= 0;
+
     return Center(
-        child: _timeRemaining.inSeconds > 0
-            ? MyCustomText(
-                text:
-                    "Time Left: ${_timeRemaining.inDays}d ${_timeRemaining.inHours.remainder(24)}h ${_timeRemaining.inMinutes.remainder(60)}m ${_timeRemaining.inSeconds.remainder(60)}s",
-                fontSize: 20,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 14),
+       // margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isDeadlinePassed
+                ? [Colors.redAccent, Colors.red.shade700]
+                : [Colors.deepPurple, Colors.cyan],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            )
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isDeadlinePassed
+                  ? Icons.warning_amber_rounded
+                  : Icons.timer_outlined,
+              color: Colors.white,
+              size: 28,
+            ),
+            const SizedBox(width: 12),
+            Flexible(
+              child: MyCustomText(
+                text: isDeadlinePassed
+                    ? "Deadline Passed!"
+                    : "⏳ ${_timeRemaining.inDays}d ${_timeRemaining.inHours.remainder(24)}h "
+                        "${_timeRemaining.inMinutes.remainder(60)}m ${_timeRemaining.inSeconds.remainder(60)}s",
+                fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: const Color.fromARGB(255, 118, 43, 180),
-              )
-            : MyCustomText(
-                text: "Deadline Passed!",
-                fontSize: 20,
-                color: Colors.red,
-                fontWeight: FontWeight.w500,
-              ));
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
+
 }

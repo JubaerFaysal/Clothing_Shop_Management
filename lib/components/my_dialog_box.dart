@@ -16,7 +16,7 @@ class MyDialogBox extends StatelessWidget {
                   children: [
                     CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.cyan),
+                          Colors.teal),
                     ),
                     SizedBox(height: 20.0),
                     Text(
@@ -24,7 +24,7 @@ class MyDialogBox extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold,
-                          color: Colors.cyan),
+                          color: Colors.teal),
                     ),
                   ],
                 ),

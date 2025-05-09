@@ -2,10 +2,10 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tailor_shop/Methods/timer.dart';
 import 'package:tailor_shop/components/my_button.dart';
 
-import 'my_custom_text.dart';
 
 class MyContainer extends StatelessWidget {
   final String id;
@@ -92,193 +92,265 @@ class MyContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Container(
-          margin: const EdgeInsets.all(12),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: const[
-              BoxShadow(
-                color: Color.fromARGB(255, 31, 70, 122),
-                blurRadius: 3,
-                spreadRadius: 2,
-                offset: Offset(1, 4),
-              ),
-            ],
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        margin: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFe0f7fa), Color(0xFFffffff)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (measurement != null) Product(),
-              const SizedBox(height: 8),
-              if (token != null) rowText("Token:", token!),
-              if (productName != null) rowText("Product Name:", productName!),
-              if (fabric != null) rowText("Fabric:", fabric!),
-              if (quantity != null) rowText("Quantity:", quantity!),
-              if (unitPrice != null) rowText("Unit Price:", unitPrice!),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              // ignore: deprecated_member_use
+              color: Colors.teal.withOpacity(0.2),
+              blurRadius: 10,
+              spreadRadius: 1,
+              offset: const Offset(2, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (measurement != null) _highlightTitle(measurement!),
+            const SizedBox(height: 10),
+
+            // Order Info Section
+            _section("Order Details", [
+              if (token != null) _rowText("Token", token!),
+              if (productName != null) _rowText("Product", productName!),
+              if (fabric != null) _rowText("Fabric", fabric!),
+              if (quantity != null) _rowText("Quantity", quantity!),
+              if (unitPrice != null) _rowText("Unit Price", unitPrice!),
               if (totalPrice != null)
-                rowText("Total Price:", totalPrice!.toString()),
-              if (advance != null) rowText("Advance:", advance!),
-              //const Divider(thickness: 2,height: 0,color: Colors.black,),
-              if (due != null) rowText("Due:", due!.toString()),
+                _rowText("Total Price", "₹ ${totalPrice!.toStringAsFixed(2)}"),
+              if (advance != null) _rowText("Advance", "₹ $advance"),
+              if (due != null) _rowText("Due", "₹ ${due!.toStringAsFixed(2)}"),
+              if (orderDate != null) _rowText("Ordered On", orderDate!),
+              if (deliveryDate != null) _rowText("Delivery By", deliveryDate!),
+            ]),
 
-              if (orderDate != null) rowText("Order Date:", orderDate!),
-              if (deliveryDate != null)
-                rowText("Delivery Date:", deliveryDate!),
-              const Divider(
-                color: Colors.blue,
-                thickness: 0.5,
-              ),
-              // Using Wrap to handle responsiveness
-              Wrap(
-                spacing: 10,
-                runSpacing: 5,
-                children: [
-                  if (Neck_Circumference != null)
-                    rowText("Neck_Circumference:", Neck_Circumference!),
-                  if (Shoulder_Width != null)
-                    rowText("Shoulder_Width:", Shoulder_Width!),
-                  if (Chest_Bust != null) rowText("Chest_Bust:", Chest_Bust!),
-                  if (waist != null) rowText("waist:", waist!),
-                  if (Sleeve_Length != null)
-                    rowText("Sleeve_Length:", Sleeve_Length!),
-                  if (Arm_Hole != null) rowText("Arm_Hole:", Arm_Hole!),
-                  if (bicep != null) rowText("bicep:", bicep!),
-                  if (Cuff_Circumference != null)
-                    rowText("Cuff_Circumference:", Cuff_Circumference!),
-                  if (Shirt_Length != null)
-                    rowText("Shirt_Length:", Shirt_Length!),
-                  if (Hip != null) rowText("Hip:", Hip!),
-                  if (Front_Rise != null) rowText("Front_Rise:", Front_Rise!),
-                  if (Crotch_Depth != null)
-                    rowText("Crotch_Depth:", Crotch_Depth!),
-                  if (Back_Rise != null) rowText("Back_Rise:", Back_Rise!),
-                  if (Inseam != null) rowText("Inseam:", Inseam!),
-                  if (Outseam != null) rowText("Outseam:", Outseam!),
-                  if (Thigh != null) rowText("Thigh:", Thigh!),
-                  if (Knee != null) rowText("Knee:", Knee!),
-                  if (Leg_Opening != null)
-                    rowText("Leg_Opening:", Leg_Opening!),
-                  if (hem != null) rowText("Hem:", hem!),
-                  if (neckOpening != null)
-                    rowText("neckOpening:", neckOpening!),
-                ],
-              ),
-              const SizedBox(height: 8),
+            const Divider(thickness: 1, color: Colors.teal),
 
-              DeadlineTimer(orderId: id),
-              const Divider(
-                color: Colors.blue,
-                thickness: 0.5,
-              ),
-              // Buttons section
-              if (onPressed != null)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: MyButton(
-                    text: "View Details",
-                    onPressed: onPressed,
-                    icon: Icons.visibility,
-                    color: Colors.teal,
-                    //fontsize: 16,
-                  ),
-                ),
-              if (modify != null || newItem != null || delete != null)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    if (modify != null)
-                      MyButton(
-                        text: "Edit",
-                        onPressed: modify,
-                        icon: Icons.edit,
-                        color: Colors.blueAccent,
-                      ),
-                    if (newItem != null)
-                      MyButton(
-                        text: "New Item",
-                        onPressed: newItem,
-                        icon: Icons.add_card,
-                        color: Colors.blue,
-                      ),
-                    if (delete != null)
-                      MyButton(
-                        text: "Delete",
-                        onPressed: delete,
-                        icon: Icons.delete,
-                        color: Colors.red,
-                      ),
-                  ],
-                ),
-              if (completed != null)
-                Align(
-                  alignment: Alignment.center,
-                  child: MyButton(
-                    icon: Icons.done,
-                    text: "Mark as Completed!",
-                    color: Colors.orange,
-                    onPressed: completed,
-                  ),
-                ),
-              if (deliveried != null)
-                Align(
-                  alignment: Alignment.center,
-                  child: MyButton(
-                    icon: Icons.delivery_dining,
-                    text: "Deliver the Item!",
-                    color: Colors.orange,
-                    onPressed: deliveried,
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
-    );
+            // Measurement Info in Responsive Wrap
+            if (_hasMeasurements())
+              _section("Measurements", [
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  children: _buildMeasurementChips(),
+                )
+              ]),
+
+            const SizedBox(height: 10),
+            DeadlineTimer(orderId: id),
+
+            const Divider(thickness: 1, color: Colors.teal),
+
+            // Buttons Section
+            _buildActions(),
+          ],
+        ),
+      );
+    });
   }
 
-  Widget Product() {
+  Widget _highlightTitle(String text) {
     return Container(
-      padding: const EdgeInsets.all(9),
       width: double.infinity,
-      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.teal,
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.teal.shade400,
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: MyCustomText(
-        text: "$measurement",
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
+      child: Center(
+        child: Text(
+          text,
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.1,
+          ),
+        ),
       ),
     );
   }
 
-  Widget rowText(String label, String value) {
+  Widget _rowText(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MyCustomText(
-            text: label,
-            // fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+          Text(
+            "$label:",
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: Colors.grey[800],
+            ),
           ),
-          MyCustomText(
-            text: value,
-            //textAlign: TextAlign.right,
-            // fontSize: 14,
-            color: Colors.black,
-            fontWeight: FontWeight.w600,
+          Text(
+            value,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+              color: Colors.black,
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _section(String title, List<Widget> children) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.teal.shade700,
+          ),
+        ),
+        const SizedBox(height: 6),
+        ...children,
+      ],
+    );
+  }
+
+  List<Widget> _buildMeasurementChips() {
+    final dataMap = {
+      "Neck": Neck_Circumference,
+      "Shoulder": Shoulder_Width,
+      "Chest": Chest_Bust,
+      "Waist": waist,
+      "Sleeve": Sleeve_Length,
+      "Arm Hole": Arm_Hole,
+      "Bicep": bicep,
+      "Cuff": Cuff_Circumference,
+      "Shirt Length": Shirt_Length,
+      "Hip": Hip,
+      "Front Rise": Front_Rise,
+      "Crotch": Crotch_Depth,
+      "Back Rise": Back_Rise,
+      "Inseam": Inseam,
+      "Outseam": Outseam,
+      "Thigh": Thigh,
+      "Knee": Knee,
+      "Leg Opening": Leg_Opening,
+      "Hem": hem,
+      "Neck Opening": neckOpening,
+    };
+
+    return dataMap.entries
+        .where((entry) => entry.value != null)
+        .map((entry) => Chip(
+              label: Text(
+                "${entry.key}:   ${entry.value}",
+                style: GoogleFonts.poppins(fontSize: 16,fontWeight: FontWeight.w700),
+              ),
+              backgroundColor: Colors.teal.shade100,
+              
+            ))
+        .toList();
+  }
+
+  Widget _buildActions() {
+    return Column(
+      children: [
+        if (onPressed != null)
+          Align(
+            alignment: Alignment.centerRight,
+            child: MyButton(
+              text: "View Details",
+              onPressed: onPressed,
+              icon: Icons.visibility,
+              color: Colors.teal,
+            ),
+          ),
+        if (modify != null || newItem != null || delete != null)
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            alignment: WrapAlignment.center,
+            children: [
+              if (modify != null)
+                MyButton(
+                  text: "Edit",
+                  fontsize: 16,
+                  onPressed: modify,
+                  icon: Icons.edit,
+                  color: Colors.blueAccent,
+                ),
+              if (newItem != null)
+                MyButton(
+                  text: "Add Item",
+                  fontsize: 16,
+                  onPressed: newItem,
+                  icon: Icons.add_circle,
+                  color: Colors.indigo,
+                ),
+              if (delete != null)
+                MyButton(
+                  text: "Delete",
+                  fontsize: 16,
+                  onPressed: delete,
+                  icon: Icons.delete,
+                  color: Colors.redAccent,
+                ),
+            ],
+          ),
+        const SizedBox(height: 10),
+        if (completed != null)
+          MyButton(
+            icon: Icons.check_circle,
+            text: "Mark as Completed",
+            color: const Color.fromARGB(255, 255, 160, 64),
+            onPressed: completed,
+            fontsize: 16,
+          ),
+        if (deliveried != null)
+          MyButton(
+            icon: Icons.delivery_dining,
+            text: "Deliver Item",
+            fontsize: 16,
+            color: Colors.green,
+            onPressed: deliveried,
+          ),
+      ],
+    );
+  }
+
+  bool _hasMeasurements() {
+    return [
+      Neck_Circumference,
+      Shoulder_Width,
+      Chest_Bust,
+      waist,
+      Sleeve_Length,
+      Arm_Hole,
+      bicep,
+      Cuff_Circumference,
+      Shirt_Length,
+      Hip,
+      Front_Rise,
+      Crotch_Depth,
+      Back_Rise,
+      Inseam,
+      Outseam,
+      Thigh,
+      Knee,
+      Leg_Opening,
+      hem,
+      neckOpening,
+    ].any((element) => element != null);
   }
 }

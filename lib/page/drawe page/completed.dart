@@ -25,8 +25,8 @@ class _CompletedState extends State<Completed> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
-        elevation: 5,
-        backgroundColor: const Color.fromARGB(255, 25, 175, 255),
+       elevation: 5,
+        backgroundColor: Colors.teal.shade500,
         title: isSearchVisible
             ? SizedBox(
                 width: 200,

@@ -19,8 +19,8 @@ class NewOrder extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-          elevation: 5,
-          backgroundColor: Colors.cyan,
+           elevation: 5,
+          backgroundColor: Colors.teal.shade500,
           title: Text(
             "New Order",
             style: GoogleFonts.poppins(

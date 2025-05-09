@@ -23,184 +23,181 @@ class CustomerDetails extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-          elevation: 5,
-          backgroundColor: Colors.cyan,
-          title: Text(
-            "Customer Details",
-            style: GoogleFonts.poppins(
-                fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
-          ),
-          leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                color: Colors.white,
-              ))),
-      body: ListView(children: [
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: screenWidth < 600 ? 8 : 24,
-            vertical: 8,
-          ),
-          child: Card(
-            elevation: 7,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            surfaceTintColor: Colors.white,
-            shadowColor: const Color.fromARGB(255, 8, 72, 124),
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.person, color: Colors.blue),
-                  title: Text(
-                    eachCustomer['name'],
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  subtitle: Text(eachCustomer['email']),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.wechat, color: Colors.blue),
-                  title: Text(eachCustomer['phone']),
-                  trailing: const Icon(Icons.touch_app, color: Colors.blue),
-                  onTap: () async {
-                    FocusScope.of(context).unfocus();
-                    String phone = eachCustomer['phone'];
-                    String url =
-                        "https://wa.me/$phone?text=Hello Sir,Your Order is Completed. Come and receive your product";
-                    final Uri uri = Uri.parse(url);
-      
-                    if (Platform.isIOS || Platform.isAndroid) {
-                      if (!await launchUrl(uri,
-                          mode: LaunchMode.externalApplication)) {
-                        throw 'Could not launch $url';
-                      }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text(
-                                "This feature is only supported on real devices.")),
-                      );
-                    }
-                  },
-                ),
-                ListTile(
-                  leading:
-                      const Icon(Icons.calendar_today, color: Colors.blue),
-                  title: Text("Date of Birth: ${eachCustomer['DoB']}"),
-                ),
-              ],
-            ),
+        elevation: 5,
+        backgroundColor: Colors.teal.shade500,
+        title: Text(
+          "Customer Details",
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
         ),
-         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: MyListTile(
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+        ),
+      ),
+      body: ListView(
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth < 600 ? 12 : 24,
+          vertical: 16,
+        ),
+        children: [
+          _buildCustomerCard(context),
+          const SizedBox(height: 12),
+          _buildSectionTitle("Orders"),
+          const SizedBox(height: 6),
+          _buildOrderTile(
+            context,
             icon: Icons.holiday_village,
             title: "Pending Orders",
-            tilecolor: Colors.blueAccent,
-            iconcolor: Colors.deepOrange,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => PendingOrder(
-                        id: eachCustomer['id'],
-                      )),
-            ),
+            color: Colors.blueAccent,
+            iconColor: Colors.deepOrange,
+            route: PendingOrder(id: eachCustomer['id']),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: MyListTile(
+          _buildOrderTile(
+            context,
             icon: Icons.done_all,
             title: "Completed Orders",
-            tilecolor: const Color.fromARGB(255, 25, 175, 255),
-            iconcolor: Colors.purple,
-            onTap: () { 
-              Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => CompletedOrder(
-                        id: eachCustomer['id'],
-                      )),
-            );
-            }
+            color: Colors.indigo,
+            iconColor: Colors.amber,
+            route: CompletedOrder(id: eachCustomer['id']),
           ),
-        ),
-         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: MyListTile(
+          _buildOrderTile(
+            context,
             icon: Icons.delivery_dining,
             title: "Delivered Orders",
-            tilecolor: Colors.cyanAccent,
-            iconcolor: Colors.black,
-            onTap: () {
-              Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => DeliveredOrder(
-                        eachCustomer: eachCustomer,
-                      )),
-            );
-            }
+            color: Colors.teal,
+            iconColor: Colors.black,
+            route: DeliveredOrder(eachCustomer: eachCustomer),
           ),
-        ),
-      ]),
-      floatingActionButton: SpeedDial(
-        animatedIcon: AnimatedIcons.menu_close,
-        backgroundColor: const Color.fromARGB(255, 0, 226, 226),
-        elevation: 9,
-        buttonSize: const Size(60, 60),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        children: [
-          SpeedDialChild(
-            label: "Shirt",
-            labelBackgroundColor: Colors.cyanAccent,
-            backgroundColor: Colors.cyanAccent,
-            child: const Icon(Icons.checkroom),
-            onTap: () => shirt(context, eachCustomer.id, "Shirt"),
-          ),
-          SpeedDialChild(
-            label: "Pants",
-            labelBackgroundColor: Colors.cyanAccent,
-            backgroundColor: Colors.cyanAccent,
-            child: const Icon(Icons.style),
-            onTap: () {
-              pant(context, eachCustomer.id, "Pant");
-            }
-          ),
-          SpeedDialChild(
-            label: "T-Shirt",
-            labelBackgroundColor: Colors.cyanAccent,
-            backgroundColor: Colors.cyanAccent,
-            child: const Icon(Icons.shopping_cart),
-            onTap: () {
-              tshirt(context, eachCustomer.id, "T-Shirt");
-            }
-          ),
-          SpeedDialChild(
-            label: "Formal",
-            labelBackgroundColor: Colors.cyanAccent,
-            backgroundColor: Colors.cyanAccent,
-            child: const Icon(Icons.checkroom_outlined),
-            onTap: () {}
-          ),
-          SpeedDialChild(
-            label: "Borkha",
-            labelBackgroundColor: Colors.cyanAccent,
-            backgroundColor: Colors.cyanAccent,
-            child: const Icon(Icons.hiking),
-            onTap: (){}
-          ),
-         
         ],
       ),
+      floatingActionButton: _buildSpeedDial(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  Widget _buildCustomerCard(BuildContext context) {
+    return Card(
+      elevation: 8,
+      shadowColor: Colors.teal.shade300,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+        child: Column(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.person, color: Colors.teal),
+              title: Text(
+                eachCustomer['name'],
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600,fontSize: 17),
+              ),
+              subtitle: Text(eachCustomer['email']),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.phone, color: Colors.teal),
+              title: Text(eachCustomer['phone']),
+              trailing: const Icon(Icons.message, color: Colors.teal),
+              onTap: () async {
+                String phone = eachCustomer['phone'];
+                String url =
+                    "https://wa.me/$phone?text=Hello Sir, your order is completed. Please collect it.";
+                final Uri uri = Uri.parse(url);
+
+                if (Platform.isIOS || Platform.isAndroid) {
+                  if (!await launchUrl(uri,
+                      mode: LaunchMode.externalApplication)) {
+                    throw 'Could not launch $url';
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("This feature works on real devices only."),
+                    ),
+                  );
+                }
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.cake, color: Colors.teal),
+              title: Text("Date of Birth: ${eachCustomer['DoB']}"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 12.0, bottom: 4),
+      child: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: Colors.grey.shade800,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderTile(BuildContext context,
+      {required IconData icon,
+      required String title,
+      required Color color,
+      required Color iconColor,
+      required Widget route}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: MyListTile(
+        icon: icon,
+        title: title,
+        tilecolor: color,
+        iconcolor: iconColor,
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => route),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSpeedDial(BuildContext context) {
+    return SpeedDial(
+      animatedIcon: AnimatedIcons.menu_close,
+      backgroundColor: Colors.teal,
+      elevation: 9,
+      buttonSize: const Size(60, 60),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      children: [
+        _buildSpeedDialChild("Shirt", Icons.checkroom, () {
+          shirt(context, eachCustomer.id, "Shirt");
+        }),
+        _buildSpeedDialChild("Pants", Icons.style, () {
+          pant(context, eachCustomer.id, "Pant");
+        }),
+        _buildSpeedDialChild("T-Shirt", Icons.shopping_cart, () {
+          tshirt(context, eachCustomer.id, "T-Shirt");
+        }),
+        _buildSpeedDialChild("Formal", Icons.checkroom_outlined, () {}),
+        _buildSpeedDialChild("Borkha", Icons.hiking, () {}),
+      ],
+    );
+  }
+
+  SpeedDialChild _buildSpeedDialChild(
+      String label, IconData icon, VoidCallback onTap) {
+    return SpeedDialChild(
+      label: label,
+      labelBackgroundColor: Colors.teal.shade50,
+      backgroundColor: Colors.teal.shade100,
+      child: Icon(icon, color: Colors.teal.shade900),
+      onTap: onTap,
     );
   }
 }

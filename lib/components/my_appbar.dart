@@ -8,7 +8,7 @@ class MyAppbar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       elevation: 5,
-      backgroundColor: const Color.fromARGB(255, 25, 175, 255),
+      backgroundColor: Colors.teal.shade500,
       title: Text(
         name,
         style: const TextStyle(
